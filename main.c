@@ -4,21 +4,19 @@
 #pragma     config  CP = OFF
 
 #define _XTAL_FREQ  4000000
-//#define LED1        PORTBbits.RB1
-//#define LED1_TRIS   TRISBbits.TRISB1
-//#define LED2        PORTBbits.RB2
-//#define LED2_TRIS   TRISBbits.TRISB2
 
 #include <xc.h>
-
-int i = 0;
+//global variable for current output number
+int number = 0;
 
 /*
-* Takes a decimal number as an argument and returns the pin values for output 
-* to a seven segment display or blank screen if input is out of bounds.
-*/
-int convertSevenSegment(int decimalNumber) {
-    switch (decimalNumber) {
+ * Takes a decimal number as an argument and returns the pin values for output 
+ * to a seven segment display or blank screen if input is out of bounds.
+ */
+int convertSevenSegment(int decimalNumber)
+{
+    switch (decimalNumber)
+    {
         case 0:
             return ~0b10111110;
         case 1:
@@ -44,46 +42,46 @@ int convertSevenSegment(int decimalNumber) {
     }
 }
 
-void interrupt isr() {
+void interrupt isr()
+{
     INTCONbits.INTF = 0;
     int run = 1;
-    extern int i;
-    while(run) {
-        i = !PORTAbits.RA4;
-        run = !PORTAbits.RA4;
-        run = !PORTAbits.RA3;
+    extern int number;
+    
+//  Fix this
+    while (run)
+    {
+        
+        run = !PORTAbits.RA4 & !PORTAbits.RA3;
+    }
+    
+    if (PORTAbits.RA4)
+    {
+        number = 0;
     }
 }
 
-
-void main() {
-    extern int i;
+void main()
+{
+    extern int number;
     TRISB = 0b00000001;
     TRISA = 0b11111;
     
-//    LED1_TRIS = 0;
-//    LED2_TRIS = 0;
-    
     INTCONbits.INTF = 0;
-    
+
     OPTION_REGbits.INTEDG = 1;
-    
+
     INTCONbits.INTE = 1;
-    
+
     INTCONbits.GIE = 1;
-    
-    while(1) {
-//        LED1 = 1;
-//        __delay_ms(500);
-//        
-//        LED1 = 2;
-//        __delay_ms(500);
-        for (i = 0; i < 10; i++) {
-            PORTB = convertSevenSegment(i);
-            __delay_ms(1000);
+
+    while (1)
+    {
+        for (number = 0; number < 10; number++)
+        {
+            PORTB = convertSevenSegment(number);
+            //  TODO set delayTime to 1000 when not in simulator
+            __delay_ms(1);
         }
-        
     }
-    
-    return;
 }
