@@ -13,6 +13,10 @@
 
 int i = 0;
 
+/*
+* Takes a decimal number as an argument and returns the pin values for output 
+* to a seven segment display or blank screen if input is out of bounds.
+*/
 int convertSevenSegment(int decimalNumber) {
     switch (decimalNumber) {
         case 0:
@@ -36,7 +40,7 @@ int convertSevenSegment(int decimalNumber) {
         case 9:
             return ~0b11100110;
         default:
-            return 0b11111110;
+            return ~0b00000001;
     }
 }
 
