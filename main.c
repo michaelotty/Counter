@@ -56,14 +56,16 @@ void interrupt isr()
     while (run)
     {
         
-        run = !RESET & !START;
+        run = !START;
+        
+        if (RESET)
+        {
+            number = 0;
+            PORTB = convertSevenSegment(number);
+        }
     }
     
-    if (RESET)
-    {
-        number = 0;
-        PORTB = convertSevenSegment(number);
-    }
+    
 }
 
 void main()
