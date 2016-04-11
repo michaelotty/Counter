@@ -6,6 +6,10 @@
 #define _XTAL_FREQ  4000000
 
 #include <xc.h>
+
+#define START PORTAbits.RA3
+#define STOP PORTAbits.RA2
+#define RESET PORTAbits.RA4
 //global variable for current output number
 int number = 0;
 
@@ -52,12 +56,13 @@ void interrupt isr()
     while (run)
     {
         
-        run = !PORTAbits.RA4 & !PORTAbits.RA3;
+        run = !RESET & !START;
     }
     
-    if (PORTAbits.RA4)
+    if (RESET)
     {
         number = 0;
+        PORTB = convertSevenSegment(number);
     }
 }
 
@@ -81,7 +86,7 @@ void main()
         {
             PORTB = convertSevenSegment(number);
             //  TODO set delayTime to 1000 when not in simulator
-            __delay_ms(1);
+            __delay_ms(1000);
         }
     }
 }
